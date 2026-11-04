@@ -318,7 +318,7 @@ st.bar_chart(
         x="Metric",
         y="Score"
     )
-    st.divider()
+st.divider()
     st.subheader("Confusion matrix")
     st.caption("Rows = actual labels | Columns = predicted labels")
 
