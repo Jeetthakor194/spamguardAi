@@ -314,12 +314,11 @@ if page == "Dashboard":
             ]
         }).set_index("Metric")
 
-     st.bar_chart(
-    performance,
-    x="Metric",
-    y="Score"
-)
-
+            st.bar_chart(
+        performance,
+        x="Metric",
+        y="Score"
+    )
     st.divider()
     st.subheader("Confusion matrix")
     st.caption("Rows = actual labels | Columns = predicted labels")
