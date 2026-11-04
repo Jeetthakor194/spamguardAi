@@ -1,8 +1,7 @@
 
 import streamlit as st
 import pandas as pd
-import html
-from spam_classifier import train_model, predict_message
+from spam_classifier import train_model, predict_message, clean_text
 
 st.set_page_config(
     page_title="SpamGuard AI",
@@ -113,15 +112,16 @@ def load_model():
 def classify(message):
     result = predict_message(model, message)
 
-    probabilities = None
     confidence = None
 
     if hasattr(model, "predict_proba"):
         probabilities = model.predict_proba(
-            [message.lower()]
+            [clean_text(message)]
         )[0]
+
         classes = list(model.classes_)
         predicted_class = "spam" if result == "Spam" else "ham"
+
         confidence = float(
             probabilities[classes.index(predicted_class)]
         )
@@ -132,6 +132,7 @@ def classify(message):
 try:
     with st.spinner("Loading dataset and training SpamGuard AI..."):
         model, metrics, df = load_model()
+
 except Exception as exc:
     st.error("The model could not be loaded.")
     st.code(str(exc))
@@ -155,6 +156,7 @@ def analyze(message, source="SMS"):
             f"{confidence:.1%}" if confidence is not None else "N/A"
         )
     })
+
     st.session_state.history = st.session_state.history[:20]
 
     return result, confidence
@@ -209,6 +211,7 @@ def show_prediction(result, confidence):
             """,
             unsafe_allow_html=True
         )
+
     else:
         st.markdown(
             """
@@ -223,7 +226,9 @@ def show_prediction(result, confidence):
         )
 
     if confidence is not None:
-        st.write(f"Model probability for the predicted class: **{confidence:.1%}**")
+        st.write(
+            f"Model probability for the predicted class: **{confidence:.1%}**"
+        )
         st.progress(confidence)
 
     st.caption(
@@ -245,12 +250,16 @@ if page == "Dashboard":
     st.subheader("Model performance")
 
     c1, c2, c3, c4 = st.columns(4)
+
     with c1:
         metric_card("TEST ACCURACY", f"{metrics['accuracy']:.2%}")
+
     with c2:
         metric_card("SPAM PRECISION", f"{metrics['precision']:.2%}")
+
     with c3:
         metric_card("SPAM RECALL", f"{metrics['recall']:.2%}")
+
     with c4:
         metric_card("SPAM F1 SCORE", f"{metrics['f1']:.2%}")
 
@@ -260,10 +269,12 @@ if page == "Dashboard":
     )
 
     st.divider()
+
     left, right = st.columns(2)
 
     with left:
         st.subheader("Dataset distribution")
+
         distribution = pd.DataFrame({
             "Category": ["Not Spam", "Spam"],
             "Messages": [
@@ -313,12 +324,15 @@ if page == "Dashboard":
                 metrics["f1"]
             ]
         }).set_index("Metric")
-st.bar_chart(
-        performance,
-        x="Metric",
-        y="Score"
-    )
-st.divider()
+
+        st.bar_chart(
+            performance,
+            x="Metric",
+            y="Score"
+        )
+
+    st.divider()
+
     st.subheader("Confusion matrix")
     st.caption("Rows = actual labels | Columns = predicted labels")
 
@@ -332,6 +346,7 @@ st.divider()
 
     def cell(value, maximum):
         intensity = int(25 + 190 * value / max(maximum, 1))
+
         return (
             f"background-color: rgb(15, {intensity}, "
             f"{min(220, intensity + 35)}); color: white; "
@@ -346,6 +361,7 @@ st.divider()
     )
 
     st.divider()
+
     st.subheader("Try SpamGuard AI")
     st.write("Test the classifier with a message of your choice.")
 
@@ -366,7 +382,9 @@ st.divider()
 elif page == "SMS Analyzer":
 
     st.markdown("## ✉️ SMS Security Analyzer")
-    st.caption("Analyze SMS messages using your trained machine-learning model.")
+    st.caption(
+        "Analyze SMS messages using your trained machine-learning model."
+    )
 
     examples = {
         "Normal message": "Hey, are we meeting after school today?",
@@ -375,6 +393,7 @@ elif page == "SMS Analyzer":
     }
 
     selected = st.selectbox("Try an example", list(examples.keys()))
+
     message = st.text_area(
         "Message content",
         value=examples[selected],
@@ -393,7 +412,9 @@ elif page == "SMS Analyzer":
 elif page == "Email Inbox":
 
     st.markdown("## 📧 Smart Email Security")
-    st.caption("Demonstration inbox — sample emails are analyzed as message text.")
+    st.caption(
+        "Demonstration inbox — sample emails are analyzed as message text."
+    )
 
     emails = [
         {
@@ -423,6 +444,7 @@ elif page == "Email Inbox":
     ]
 
     for i, email in enumerate(emails):
+
         with st.container(border=True):
             col1, col2 = st.columns([4, 1])
 
@@ -446,12 +468,19 @@ elif page == "Activity History":
     st.caption("Recent predictions from this active app session.")
 
     if st.session_state.history:
+
         history_df = pd.DataFrame(st.session_state.history)
-        st.dataframe(history_df, use_container_width=True, hide_index=True)
+
+        st.dataframe(
+            history_df,
+            use_container_width=True,
+            hide_index=True
+        )
 
         if st.button("Clear history"):
             st.session_state.history = []
             st.rerun()
+
     else:
         st.info("No messages analyzed in this session yet.")
 
@@ -470,6 +499,7 @@ elif page == "Project Information":
     """, unsafe_allow_html=True)
 
     st.subheader("Technology stack")
+
     st.write("""
     - Python
     - pandas
@@ -494,20 +524,25 @@ elif page == "Project Information":
             st.caption(description)
 
     st.subheader("Dataset and evaluation")
+
     st.write(
         f"Dataset size: **{metrics['dataset_size']:,}** messages"
     )
+
     st.write(
         f"Spam messages: **{metrics['spam_count']:,}**"
     )
+
     st.write(
         f"Not Spam messages: **{metrics['ham_count']:,}**"
     )
+
     st.write(
         f"Test accuracy: **{metrics['accuracy']:.2%}**"
     )
 
     st.subheader("Important limitations")
+
     st.write("""
     - The model learns from its training dataset and may not recognize every new spam pattern.
     - The email inbox is a demonstration, not a connection to a real email account.
@@ -518,6 +553,7 @@ elif page == "Project Information":
 
 # ---------- FOOTER ----------
 st.divider()
+
 st.markdown(
     "<p style='text-align:center;color:#64748b;font-size:12px'>"
     "SPAMGUARD AI · Class 10 Artificial Intelligence Project<br>"
