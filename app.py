@@ -324,8 +324,8 @@ if page == "Dashboard":
                 metrics["f1"]
             ]
         }).set_index("Metric")
-
-               st.vega_lite_chart(
+        
+        st.vega_lite_chart(
             performance.reset_index(),
             {
                 "mark": {
