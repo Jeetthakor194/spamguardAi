@@ -16,8 +16,10 @@ from sklearn.metrics import (
 
 DATA_DIR = Path("data")
 DATA_FILE = DATA_DIR / "SMSSpamCollection"
-DATA_URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip"
-
+DATA_URL = DATA_URL = (
+    "https://archive.ics.uci.edu/static/public/228/"
+    "sms+spam+collection.zip"
+)
 
 def clean_text(text):
     """Lowercase text and remove punctuation and extra whitespace."""
