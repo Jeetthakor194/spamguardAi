@@ -314,13 +314,11 @@ if page == "Dashboard":
             ]
         }).set_index("Metric")
 
-        st.bar_chart(
-            performance,
-            y="Score",
-            color="#38bdf8",
-            y_min=0,
-            y_max=1
-        )
+     st.bar_chart(
+    performance,
+    x="Metric",
+    y="Score"
+)
 
     st.divider()
     st.subheader("Confusion matrix")
