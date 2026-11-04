@@ -325,12 +325,39 @@ if page == "Dashboard":
             ]
         }).set_index("Metric")
 
-        st.bar_chart(
-            performance,
-            x="Metric",
-            y="Score"
+               st.vega_lite_chart(
+            performance.reset_index(),
+            {
+                "mark": {
+                    "type": "bar",
+                    "cornerRadiusEnd": 6
+                },
+                "encoding": {
+                    "x": {
+                        "field": "Metric",
+                        "type": "nominal",
+                        "axis": {"title": None}
+                    },
+                    "y": {
+                        "field": "Score",
+                        "type": "quantitative",
+                        "scale": {"domain": [0, 1]},
+                        "axis": {"title": "Score"}
+                    },
+                    "color": {
+                        "field": "Metric",
+                        "type": "nominal",
+                        "legend": None,
+                        "scale": {
+                            "range": ["#38bdf8", "#a78bfa", "#34d399"]
+                        }
+                    },
+                    "tooltip": ["Metric", "Score"]
+                },
+                "view": {"stroke": None}
+            },
+            use_container_width=True
         )
-
     st.divider()
 
     st.subheader("Confusion matrix")
