@@ -313,8 +313,7 @@ if page == "Dashboard":
                 metrics["f1"]
             ]
         }).set_index("Metric")
-
-            st.bar_chart(
+st.bar_chart(
         performance,
         x="Metric",
         y="Score"
